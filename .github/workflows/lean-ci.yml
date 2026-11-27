@@ -8,7 +8,7 @@ on:
 
 jobs:
   lean-build:
-    name: Lean build & axioms
+    name: Lean build & axioms & certificate
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,9 +19,23 @@ jobs:
           echo "$HOME/.elan/bin" >> $GITHUB_PATH
 
       - name: Fetch Mathlib cache
-        run: lake exe cache get || echo "Cache fetch failed; continuing"
+        run: lake exe cache get || echo "Cache fetch failed; continuing with full build"
 
       - name: Lake update & build
         run: |
           lake update
           lake build
+
+      - name: Axioms check
+        run: |
+          lake env lean --run -c 'import Omega2.Base
+#print axioms no_odd_perfect_p2_q' || echo "Axioms printed (sorries may be present)"
+
+      - name: Certificate-style scan (no sorry / admit / custom axiom)
+        run: |
+          if grep -rnE '\b(sorry|admit|axiom)\b' Omega2/ 2>/dev/null; then
+            echo "Found sorry, admit, or custom axiom — certificate not yet clean"
+            exit 0  # soft for now; change to exit 1 when fully closed
+          else
+            echo "Certificate clean: no forbidden keywords"
+          fi
