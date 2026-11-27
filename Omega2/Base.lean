@@ -1,4 +1,6 @@
-import Mathlib.NumberTheory.ArithmeticFunction
+import Mathlib.NumberTheory.ArithmeticFunction.Defs
+import Mathlib.NumberTheory.ArithmeticFunction.Misc
+import Mathlib.Data.Nat.Prime.Basic
 import Mathlib.Tactic
 
 open ArithmeticFunction
@@ -8,6 +10,7 @@ open ArithmeticFunction
 
 No odd perfect number of the form \(p^2 q\) for distinct odd primes \(p, q\).
 Existence of an odd perfect number remains open.
+This is a classical elementary case; the formalization is a re-verification.
 -/
 
 /-- No odd perfect number of the form p ^ 2 * q with distinct odd primes p, q. -/
@@ -31,7 +34,6 @@ theorem no_odd_perfect_p2_q (p q : ℕ)
     have := hq.two_le
     rcases hodd.2 with ⟨k, rfl⟩
     omega
-  -- Direct inequality for distinct odd primes
   have hlt : (1 + p + p ^ 2) * (1 + q) < 2 * (p ^ 2 * q) := by
     nlinarith [sq_nonneg (p - 3), sq_nonneg (q - 3), hp3, hq3]
   rw [hsig]
